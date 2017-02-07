@@ -14,13 +14,14 @@ import sys
 pygame.init()
 pygame.mixer.init()
 pygame.display.set_mode((650, 850))
-interval = 1
+interval = 0
 songList = ["sound/Song1.wav", "sound/Song2.wav", "sound/Song3.wav"]
 isPlaying = True
 
 #play the theme song while on the main menu
 themeSong = pygame.mixer.Sound("sound/Theme.wav")
 channel1 = themeSong.play()
+themeSong.set_volume(.5)
 gameStart = False
 gameEnd = False
 
@@ -55,6 +56,7 @@ while gameStart == False:
 channel1.stop() #stop the theme song
 currentSong = pygame.mixer.Sound(songList[interval])
 channel1 = currentSong.play()
+currentSong.set_volume(.5)
 isPlaying = True
 
 #game controls
