@@ -64,6 +64,11 @@ while gameEnd == False:
                 print("s")
             if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT: #hyperdrive (movement speed increase)
                 print("p")
-
+            if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS: #volume down
+                if channel1.get_volume > 0
+                    channel1.get_sound().set_volume(channel1.get_volume - .1)
+            if event.key == pygame.K_EQUALS or event.key == pygame.K_KP_PLUS: #volume up
+                if channel1.get_volume < 1
+                    channel1.get_sound().set_volume(channel1.get_volume + .1)
 
 
