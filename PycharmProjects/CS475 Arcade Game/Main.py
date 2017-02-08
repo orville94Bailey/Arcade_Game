@@ -14,6 +14,7 @@ from Sprite import Sprite
 #set up pyGame
 pygame.init()
 pygame.mixer.init()
+pygame.font.init()
 clock = pygame.time.Clock()
 
 #set up the screen
@@ -29,7 +30,7 @@ isPlaying = True
 
 #play the theme song while on the main menu
 themeSong = pygame.mixer.Sound("sound/Theme.wav")
-channel1 = themeSong.play()
+channel1 = themeSong.play(-1)
 themeSong.set_volume(.5)
 gameStart = False #boolean to check if player has started the game
 gameEnd = False #boolean to check if player has reached the win condition
@@ -39,7 +40,28 @@ spriteList = pygame.sprite.Group()
 player = Sprite("sprite/PlayerShip.png", .5 * screenW - 40, .75 * screenH, 80, 80)
 
 #setup other sprites
-background = pygame.image.load("sprite/Background.png")
+background = Sprite("sprite/Background.png", 0, 0, screenW, screenH)
+menuBackground = Sprite("sprite/MainMenu.png", 0, 0, screenW, screenH)
+
+#fonts
+gameFont = pygame.font.Font("font/space.ttf", 40) #cool title font!
+insFont = pygame.font.Font("font/space2.ttf", 18) #easier to read font for instructions.
+p2Font = pygame.font.Font("font/space2.ttf", 14) #font for further clarification.
+
+titleText = "Rhythm Pilot"
+title = gameFont.render(titleText, True, (255, 255, 255))
+
+gameInsP1 = "Use W,A,S,D to move. You can also shoot with SPACE."
+gameInsP2 = "You can increase your movement speed with SHIFT."
+gameInsP2p2 = "(This is mainly useful for moving in straight lines though)"
+gameInsP3 = "Use + or - to control volume. M will mute the music."
+gameInsP4 = "Press ENTER or RETURN to begin."
+
+ins1 = insFont.render(gameInsP1, True, (255, 255, 255))
+ins2 = insFont.render(gameInsP2, True, (255, 255, 255))
+ins2p5 = p2Font.render(gameInsP2p2, True, (255, 255, 255))
+ins3 = insFont.render(gameInsP3, True, (255, 255, 255))
+ins4 = insFont.render(gameInsP4, True, (255, 255, 255))
 
 # make object pools of player bullets and enemies
 bulletPool = []
@@ -79,6 +101,19 @@ while gameStart == False:
             else:
                 isPlaying = True
                 channel1.unpause()
+
+    # update screen
+    screen.fill((0, 0, 0))
+    screen.blit(menuBackground.image, menuBackground.rect)
+    screen.blit(title, (.5 * screenW - (gameFont.size(titleText)[0] / 2), 10))
+    screen.blit(ins1, (.5 * screenW - (insFont.size(gameInsP1)[0] / 2), 50))
+    screen.blit(ins2, (.5 * screenW - (insFont.size(gameInsP2)[0] / 2), 50 + gameFont.size(gameInsP1)[1] * .8))
+    screen.blit(ins2p5, (.5 * screenW - (p2Font.size(gameInsP2p2)[0] / 2), 50 + gameFont.size(gameInsP1)[1] * 1.4))
+    screen.blit(ins3, (.5 * screenW - (insFont.size(gameInsP3)[0] / 2), 50 + gameFont.size(gameInsP1)[1] * 2))
+    screen.blit(ins4, (.5 * screenW - (insFont.size(gameInsP4)[0] / 2), screenH - 50))
+    # Refresh Screen
+    pygame.display.flip()
+    clock.tick(60)
 #
 #set up the game
 #
@@ -86,7 +121,7 @@ while gameStart == False:
 #set the first song
 channel1.stop() #stop the theme song
 currentSong = pygame.mixer.Sound(songList[interval])
-channel1 = currentSong.play()
+channel1 = currentSong.play(-1)
 currentSong.set_volume(.5)
 isPlaying = True
 
@@ -187,7 +222,7 @@ while gameEnd == False:
         #update screen
         spriteList.update()
         screen.fill((0, 0, 0))
-        screen.blit(background, (0, 0))
+        screen.blit(background.image, background.rect)
         spriteList.draw(screen)
 
         # Refresh Screen
