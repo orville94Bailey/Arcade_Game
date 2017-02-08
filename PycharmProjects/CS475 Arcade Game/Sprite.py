@@ -1,6 +1,14 @@
 import pygame
 
 class Sprite(pygame.sprite.Sprite):
+    #need for speed
+    speed = 5
+    uSpeed = 0
+    rSpeed = 0
+    dSpeed = 0
+    lSpeed = 0
+    destructable = False
+
     def __init__(self, sprite, startx, starty, width, height):
         super().__init__()
 
@@ -8,7 +16,7 @@ class Sprite(pygame.sprite.Sprite):
         self.height = height
 
         #set the image
-        self.image = pygame.image.load(sprite).convert_alpha()
+        self.image = pygame.image.load(sprite)
 
         # Fetch the rectangle object that has the dimensions of the image.
         self.rect = self.image.get_rect()

@@ -38,12 +38,23 @@ gameEnd = False #boolean to check if player has reached the win condition
 spriteList = pygame.sprite.Group()
 player = Sprite("sprite/PlayerShip.png", .5 * screenW - 40, .75 * screenH, 80, 80)
 
-speed = 5 #player speed
-xSpeed = 0
-ySpeed = 0
-
 #setup other sprites
-background = Sprite("sprite/GameBackground.jpg", 0, 0, screenW, screenH)
+background = pygame.image.load("sprite/Background.png")
+
+# make object pools of player bullets and enemies
+bulletPool = []
+enemyPool = []
+bulletCounter = 0
+enemyCounter = 0
+bulletCooldown = 500
+for index in range(0, 10):
+    spr = Sprite("sprite/EnergyBall1.png", 0, 0, 20, 20)
+    spr.destructable = True
+    bulletPool.append(spr)
+for index in range(0, 20):
+    spr = Sprite("sprite/EnergyBall2.png", 0, 0, 50, 50)
+    spr.destructable = True
+    enemyPool.append(spr)
 
 #menu controls
 while gameStart == False:
@@ -80,7 +91,6 @@ currentSong.set_volume(.5)
 isPlaying = True
 
 #add appropriate sprites to the list
-spriteList.add(background)
 spriteList.add(player)
 
 #The game!
@@ -95,17 +105,31 @@ while gameEnd == False:
             #player input checks
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w: #move up
-                    ySpeed = -speed
+                    player.uSpeed = -player.speed
                 if event.key == pygame.K_a: #move left
-                    xSpeed = -speed
+                    player.lSpeed = -player.speed
                 if event.key == pygame.K_s: #move down
-                    ySpeed = speed
+                    player.dSpeed = player.speed
                 if event.key == pygame.K_d: #move right
-                    xSpeed = speed
+                    player.rSpeed = player.speed
                 if event.key == pygame.K_SPACE: #shoot
-                    print("sd")
+                    #create a bullet if able
+                    if bulletCooldown >= 50:
+                        bulletCounter = bulletCounter + 1
+                        if bulletCounter > len(bulletPool) - 1: #if at the end of pool, reset the index
+                            bulletCounter = 0
+                        bullet = bulletPool[bulletCounter]
+                        bullet.speed = 15 # set it's speed and location
+                        bullet.uSpeed = -bullet.speed
+                        bullet.rect.x = player.rect.centerx
+                        bullet.rect.y = player.rect.centery
+                        spriteList.add(bullet)
+                        bulletCooldown = 0
                 if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT: #hyperdrive (movement speed increase)
-                    speed = speed * 2
+                    player.uSpeed = player.uSpeed * 2
+                    player.lSpeed = player.lSpeed * 2
+                    player.dSpeed = player.dSpeed * 2
+                    player.rSpeed = player.rSpeed * 2
                 if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS: #volume down
                     if channel1.get_volume() > 0:
                         channel1.set_volume(channel1.get_volume() - .1)
@@ -122,38 +146,48 @@ while gameEnd == False:
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:  # move up
-                    ySpeed = 0
+                    player.uSpeed = 0
                 if event.key == pygame.K_a:  # move left
-                    xSpeed = 0
+                    player.lSpeed = 0
                 if event.key == pygame.K_s:  # move down
-                    ySpeed = 0
+                    player.dSpeed = 0
                 if event.key == pygame.K_d:  # move right
-                    xSpeed = 0
-                if event.key == pygame.K_SPACE:  # shoot
-                    print("su")
+                    player.rSpeed = 0
                 if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:  # hyperdrive (movement speed increase)
-                    speed = 5
+                    player.speed = 5
 
-        #update positions (using pixel-perfect movement)
-        if player.rect.bottom < screenH and player.rect.top > 0:
-            player.rect.y = player.rect.y + ySpeed
-        if player.rect.right < screenW and player.rect.left > 0:
-            player.rect.x = player.rect.x + xSpeed
+        bulletCooldown = bulletCooldown + 1
 
-        #player position adjustments
-        while (player.rect.bottom >= screenH):
-            player.rect.y = player.rect.y - 1
-        while (player.rect.top <= 0):
-            player.rect.y = player.rect.y + 1
-        while (player.rect.right >= screenW):
-            player.rect.x = player.rect.x - 1
-        while (player.rect.left <= 0):
-            player.rect.x = player.rect.x + 1
+        spritesToModify = spriteList.sprites()
+
+        for sprite in spritesToModify:
+            #update positions (using pixel-perfect movement)
+            if sprite.rect.bottom < screenH and sprite.rect.top > 0 and sprite.rect.right < screenW and sprite.rect.left > 0:
+                sprite.rect.y = sprite.rect.y + sprite.uSpeed + sprite.dSpeed
+                sprite.rect.x = sprite.rect.x + sprite.lSpeed + sprite.rSpeed
+
+            #player position adjustments
+            while (sprite.rect.bottom >= screenH):
+                if sprite.destructable == True:  # if the obj is destructible and it hits a wall, get rid of it
+                    spriteList.remove(sprite)
+                sprite.rect.y = sprite.rect.y - 1
+            while (sprite.rect.top <= 0):
+                if sprite.destructable == True:  # if the obj is destructible and it hits a wall, get rid of it
+                    spriteList.remove(sprite)
+                sprite.rect.y = sprite.rect.y + 1
+            while (sprite.rect.right >= screenW):
+                if sprite.destructable == True:  # if the obj is destructible and it hits a wall, get rid of it
+                    spriteList.remove(sprite)
+                sprite.rect.x = sprite.rect.x - 1
+            while (sprite.rect.left <= 0):
+                if sprite.destructable == True:  # if the obj is destructible and it hits a wall, get rid of it
+                    spriteList.remove(sprite)
+                sprite.rect.x = sprite.rect.x + 1
 
         #update screen
         spriteList.update()
-
         screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
         spriteList.draw(screen)
 
         # Refresh Screen
