@@ -25,13 +25,13 @@ pygame.display.set_caption("Rhythm Pilot")
 
 #some song variables
 interval = 0
-songList = ["sound/Song1.wav", "sound/Song2.wav", "sound/Song3.wav"]
+songList = ["sound/Song1.mp3", "sound/Song2.mp3", "sound/Song3.mp3"]
 isPlaying = True
 
 #play the theme song while on the main menu
-themeSong = pygame.mixer.Sound("sound/Theme.wav")
-channel1 = themeSong.play(-1)
-themeSong.set_volume(.5)
+pygame.mixer.music.load("sound/Theme.mp3")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(.5)
 gameStart = False #boolean to check if player has started the game
 gameEnd = False #boolean to check if player has reached the win condition
 
@@ -56,12 +56,14 @@ gameInsP2 = "You can increase your movement speed with SHIFT."
 gameInsP2p2 = "(This is mainly useful for moving in straight lines though)"
 gameInsP3 = "Use + or - to control volume. M will mute the music."
 gameInsP4 = "Press ENTER or RETURN to begin."
+gameInsP4p2 = "(Use the first few seconds to get use to the controls)"
 
 ins1 = insFont.render(gameInsP1, True, (255, 255, 255))
 ins2 = insFont.render(gameInsP2, True, (255, 255, 255))
-ins2p5 = p2Font.render(gameInsP2p2, True, (255, 255, 255))
+ins2p2 = p2Font.render(gameInsP2p2, True, (255, 255, 255))
 ins3 = insFont.render(gameInsP3, True, (255, 255, 255))
 ins4 = insFont.render(gameInsP4, True, (255, 255, 255))
+ins4p2 = p2Font.render(gameInsP4p2, True, (255, 255, 255))
 
 # make object pools of player bullets and enemies
 bulletPool = []
@@ -89,18 +91,18 @@ while gameStart == False:
             gameStart = True
             break
         if event.type == pygame.KEYDOWN and (event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS):  # volume down
-            if channel1.get_volume() > 0:
-                channel1.set_volume(channel1.get_volume() - .1)
+            if pygame.mixer.music.get_volume() > 0:
+                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume() - .1)
         if event.type == pygame.KEYDOWN and (event.key == pygame.K_EQUALS or event.key == pygame.K_KP_PLUS):  # volume up
-            if channel1.get_volume() < 1:
-                channel1.set_volume(channel1.get_volume() + .1)
+            if pygame.mixer.music.get_volume() < 1:
+                pygame.mixer.music.set_volume(pygame.mixer.music.get_volume() + .1)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_m: #mute
             if isPlaying:
                 isPlaying = False
-                channel1.pause()
+                pygame.mixer.music.pause()
             else:
                 isPlaying = True
-                channel1.unpause()
+                pygame.mixer.music.unpause()
 
     # update screen
     screen.fill((0, 0, 0))
@@ -108,9 +110,10 @@ while gameStart == False:
     screen.blit(title, (.5 * screenW - (gameFont.size(titleText)[0] / 2), 10))
     screen.blit(ins1, (.5 * screenW - (insFont.size(gameInsP1)[0] / 2), 50))
     screen.blit(ins2, (.5 * screenW - (insFont.size(gameInsP2)[0] / 2), 50 + gameFont.size(gameInsP1)[1] * .8))
-    screen.blit(ins2p5, (.5 * screenW - (p2Font.size(gameInsP2p2)[0] / 2), 50 + gameFont.size(gameInsP1)[1] * 1.4))
+    screen.blit(ins2p2, (.5 * screenW - (p2Font.size(gameInsP2p2)[0] / 2), 50 + gameFont.size(gameInsP1)[1] * 1.4))
     screen.blit(ins3, (.5 * screenW - (insFont.size(gameInsP3)[0] / 2), 50 + gameFont.size(gameInsP1)[1] * 2))
-    screen.blit(ins4, (.5 * screenW - (insFont.size(gameInsP4)[0] / 2), screenH - 50))
+    screen.blit(ins4, (.5 * screenW - (insFont.size(gameInsP4)[0] / 2), screenH - 100))
+    screen.blit(ins4p2, (.5 * screenW - (p2Font.size(gameInsP4p2)[0] / 2), screenH - 50))
     # Refresh Screen
     pygame.display.flip()
     clock.tick(60)
@@ -119,10 +122,10 @@ while gameStart == False:
 #
 
 #set the first song
-channel1.stop() #stop the theme song
-currentSong = pygame.mixer.Sound(songList[interval])
-channel1 = currentSong.play(-1)
-currentSong.set_volume(.5)
+pygame.mixer.music.stop() #stop the theme song
+pygame.mixer.music.load(songList[interval])
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(.5)
 isPlaying = True
 
 #add appropriate sprites to the list
@@ -166,18 +169,18 @@ while gameEnd == False:
                     player.dSpeed = player.dSpeed * 2
                     player.rSpeed = player.rSpeed * 2
                 if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS: #volume down
-                    if channel1.get_volume() > 0:
-                        channel1.set_volume(channel1.get_volume() - .1)
+                    if pygame.mixer.music.get_volume() > 0:
+                        pygame.mixer.music.set_volume(pygame.mixer.music.get_volume() - .1)
                 if event.key == pygame.K_EQUALS or event.key == pygame.K_KP_PLUS: #volume up
-                    if channel1.get_volume() < 1:
-                        channel1.set_volume(channel1.get_volume() + .1)
+                    if pygame.mixer.music.get_volume() < 1:
+                        pygame.mixer.music.set_volume(pygame.mixer.music.get_volume() + .1)
                 if event.key == pygame.K_m: #mute
                     if isPlaying:
                         isPlaying = False
-                        channel1.pause()
+                        pygame.mixer.music.pause()
                     else:
                         isPlaying = True
-                        channel1.unpause()
+                        pygame.mixer.music.unpause()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:  # move up
