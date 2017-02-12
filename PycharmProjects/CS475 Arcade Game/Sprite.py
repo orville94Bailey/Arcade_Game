@@ -8,9 +8,12 @@ class Sprite(pygame.sprite.Sprite):
     dSpeed = 0
     lSpeed = 0
     destructable = False
+    identity = 0 #0 = misc, 1 = player, 2 = enemy, 3 = player bullet, 4 = enemy bullet
 
-    def __init__(self, sprite, startx, starty, width, height):
+    def __init__(self, sprite, startx, starty, width, height, identity):
         super().__init__()
+
+        self.identity = identity
 
         self.width = width
         self.height = height
@@ -27,6 +30,5 @@ class Sprite(pygame.sprite.Sprite):
         #scale the image down to a manageable size
         self.image = pygame.transform.smoothscale(self.image, (width, height))
 
-        targetRect = pygame.Rect(startx, starty, width, height)
         #scale hitbox to new size
-        self.rect = self.rect.clip(targetRect)
+        self.rect = self.rect.clip(pygame.Rect(startx, starty, width, height))
