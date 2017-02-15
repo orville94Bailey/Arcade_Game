@@ -163,8 +163,6 @@ while gameStart == False:
 
 
     # update screen
-    print(len(diffFont))
-    print(difficulty)
     ins5p2 = p2Font.render(diffFont[difficulty], True, (255, 255, 255))
     screen.fill((0, 0, 0))
     screen.blit(menuBackground.image, menuBackground.rect)
@@ -205,7 +203,6 @@ spriteList.add(exp)
 #The game!
 while gameEnd == False:
     while interval < difficulty + 1:
-        print(interval)
         #game controls
         for event in pygame.event.get():
             #give player option to quit the game at any time
@@ -380,7 +377,6 @@ while gameEnd == False:
     if explode == True:
         if y < 4:
             if x < 4:
-                print(str(x) + "," + str(y))
                 exp.image = ExplosionSheet.get_image((512 / 4) * x, (512 / 4) * y, 512 / 4, 512 / 4)
                 exp.image = pygame.transform.smoothscale(exp.image, (round(float(enemy.rect.width * 1.3)), enemy.rect.height)) #scale the image to the ship
                 explode = False
