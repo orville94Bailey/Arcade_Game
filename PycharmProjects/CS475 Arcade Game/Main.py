@@ -1,7 +1,6 @@
 #
 # Programmer: Michael Cantley
 # CS475 @ WVU
-# Date last edited: Feb 7, 2017
 #
 # Arcade Game: Beat Pilot
 # Description: A mix of a rhythm game and a top-down shooter akin to Galactica
